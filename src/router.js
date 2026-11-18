@@ -19,7 +19,7 @@ export function parseRoute(hashString = window.location.hash) {
   return { path, query, raw: hashString };
 }
 
-export function buildRoute(path, query = {}) {
+function buildRoute(path, query = {}) {
   const cleanPath = (path || 'home').replace(/^\/?/, '');
   const params = new URLSearchParams();
   for (const [k, v] of Object.entries(query)) {
@@ -39,13 +39,5 @@ export function navigate(path, query = {}, replace = false) {
     window.location.replace(targetHash);
   } else {
     window.location.hash = targetHash;
-  }
-}
-
-export function goBack(fallbackRoute = 'home') {
-  if (window.history.length > 1) {
-    window.history.back();
-  } else {
-    navigate(fallbackRoute);
   }
 }

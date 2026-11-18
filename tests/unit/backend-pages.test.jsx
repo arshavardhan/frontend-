@@ -16,14 +16,6 @@ beforeEach(() => {
   get.mockReset();
 });
 
-it('shows the account requirement in guest mode without making protected API requests', () => {
-  useApp.mockReturnValue({ isGuest: true, paths: [], logout: vi.fn() });
-  render(<><CodeLabPage /><GenericPage type="challenges" /></>);
-  expect(screen.getByText('Sign in to use CodeLab')).toBeTruthy();
-  expect(screen.getByText('Sign in to use Challenges')).toBeTruthy();
-  expect(get).not.toHaveBeenCalled();
-});
-
 it('loads practice and module labs for the enrolled batch and opens a practice workspace', async () => {
   const navigate = vi.fn();
   useApp.mockReturnValue({ stage2: { enrolled: true, batch: { id: 'development-basics' } }, navigate });
@@ -51,7 +43,6 @@ it('replaces challenge loading with a retryable error and loads real results aft
   fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await screen.findByText('No challenges for this path yet.')).toBeTruthy();
 });
-
 
 it('opens CodeLab from the left sidebar button', () => {
   const navigate = vi.fn();

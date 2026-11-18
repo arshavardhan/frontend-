@@ -1,7 +1,7 @@
 import React, { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { api, ApiError, errorMessage } from '../lib/api';
-import { AccountRequired, LoadingState } from '../components/shared/States';
+import { LoadingState } from '../components/shared/States';
 import { WRITTEN_FIELDS, AttemptFeedback } from '../components/Stage2Shared';
 import {
   ChevronLeft, Lightbulb, Target, Check, BookOpen, FileSearch, Terminal,
@@ -89,7 +89,7 @@ function WrittenTicket({ q, onSubmitted }) {
 }
 
 export default function Stage2TicketPage() {
-  const { currentRoute, navigate, run, isGuest } = useApp();
+  const { currentRoute, navigate, run } = useApp();
   const q = currentRoute.query;
   const isChallenge = Boolean(q.challenge);
   const [detail, setDetail] = useState(null);
@@ -103,7 +103,6 @@ export default function Stage2TicketPage() {
   const loadAttempts = useCallback(() => api.get('stage2/attempts', ref(q)).then((d) => setAttempts(d.items)).catch(() => undefined), [q.batch, q.module, q.challenge]);
 
   useEffect(() => {
-    if (isGuest) return;
     if (!q.batch || !q.module) {
       setError('Open a ticket from Stage 2 or CodeLab.');
       return;
@@ -120,7 +119,7 @@ export default function Stage2TicketPage() {
     load.then(setDetail).catch((e) => setError(errorMessage(e)));
     api.get('stage2/hints', ref(q)).then(setHints).catch(() => undefined);
     loadAttempts();
-  }, [q.batch, q.module, q.challenge, q.concept, isChallenge, loadAttempts, isGuest]);
+  }, [q.batch, q.module, q.challenge, q.concept, isChallenge, loadAttempts]);
 
   const revealHint = async () => setHints(await run(() => api.post('stage2/hints', ref(q))).catch(() => hints));
   const loadSolution = async () => {
@@ -143,7 +142,6 @@ export default function Stage2TicketPage() {
     </div>
   );
 
-  if (isGuest) return <AccountRequired feature="Stage 2 tickets" />;
   if (error)
     return (
       <div className="stage2-ticket-page">

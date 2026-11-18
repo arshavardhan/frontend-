@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Map as MapIcon, List, MapPin, Check, Lock } from 'lucide-react';
 import { useApp } from '../context/AppContext';
-import JourneyMarker from '../components/journey/JourneyMarker';
 import JourneyProgressBar from '../components/journey/JourneyProgressBar';
 import LevelListView from '../components/journey/LevelListView';
 import LockedLevelModal from '../components/journey/LockedLevelModal';
@@ -27,15 +26,11 @@ function MapHotspot({ milestone, position, onSelect, onHover, shaking }) {
 }
 
 /**
- * Milestone anchors on /illustrations/journey-map.jpg (924×728), in % of the artwork: each point
- * is the centre of a platform on the winding path, from the torii gate up to the temple.
+ * The Home journey map (1366×1076). Its badges and name pills are painted into the artwork;
+ * live hotspots sit exactly on them.
  */
-export const MOUNTAIN_MAP = {
+const MOUNTAIN_MAP = {
   image: '/illustrations/journey-map-v2.jpg',
-  width: 1366,
-  height: 1076,
-  /** The badges and name pills are painted into this artwork; live hotspots sit exactly on them. */
-  baked: true,
   /** Centre of each painted badge, in % of the artwork, following the path from the torii gate to the temple. */
   markers: {
     1: { x: 12.5, y: 85.5 },
@@ -51,7 +46,7 @@ export const MOUNTAIN_MAP = {
   },
 };
 
-export const destinationFor = (level) => (level === 2 ? 'stage2' : `level/${level}`);
+const destinationFor = (level) => (level === 2 ? 'stage2' : `level/${level}`);
 
 const reducedMotion = () => typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
 
@@ -130,18 +125,8 @@ export default function HomePage() {
             >
               <img className="hm-art" src={MOUNTAIN_MAP.image} alt="" draggable="false" />
               <div className="hm-shade" aria-hidden="true" />
-              {MOUNTAIN_MAP.baked ? milestones.map((m) => (
+              {milestones.map((m) => (
                 <MapHotspot key={m.level} milestone={m} position={MOUNTAIN_MAP.markers[m.level]} onSelect={select} onHover={setHover} shaking={shaking === m.level} />
-              )) : milestones.map((m) => (
-                <JourneyMarker
-                  key={m.level}
-                  milestone={m}
-                  position={MOUNTAIN_MAP.markers[m.level]}
-                  onSelect={select}
-                  onHover={setHover}
-                  shaking={shaking === m.level}
-                  youAreHere={m.status === 'current'}
-                />
               ))}
               {hover && (
                 <div

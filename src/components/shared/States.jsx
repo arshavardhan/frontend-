@@ -1,6 +1,5 @@
 import React from 'react';
 import { AlertCircle, Inbox } from 'lucide-react';
-import { useApp } from '../../context/AppContext';
 
 export function LoadingState({ label = 'Loading…', lines = 0 }) {
   if (lines)
@@ -33,17 +32,6 @@ export function ErrorState({ message, onRetry }) {
       <AlertCircle size={22} />
       <span>{message || 'Something went wrong.'}</span>
       {onRetry && <button className="tk-linkbtn" onClick={onRetry}>Try again</button>}
-    </div>
-  );
-}
-
-export function AccountRequired({ feature }) {
-  const { logout } = useApp();
-  return (
-    <div className="level-locked-prompt-box">
-      <h3>Sign in to use {feature}</h3>
-      <p>Use a verified Teklozy account to access this feature and save your progress.</p>
-      <button className="btn-level-primary" onClick={logout}>Go to sign in</button>
     </div>
   );
 }

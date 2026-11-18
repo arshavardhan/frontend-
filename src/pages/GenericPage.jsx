@@ -2,12 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { api, errorMessage } from '../lib/api';
 import useAsync from '../hooks/useAsync';
-import { AccountRequired, ErrorState, LoadingState } from '../components/shared/States';
+import { ErrorState, LoadingState } from '../components/shared/States';
 import LevelOnePage from './LevelOnePage';
-import {
-  Trophy, Settings, Compass, ArrowRight, CheckCircle2,
-  Lock, Zap, Star, Shield, ChevronLeft, Sparkles, Layers
-} from 'lucide-react';
+import { Settings, Compass, ArrowRight, CheckCircle2, Lock, Zap, Star, Shield, ChevronLeft, Sparkles } from 'lucide-react';
 
 function BackBar({ label }) {
   const { navigate } = useApp();
@@ -57,7 +54,7 @@ function LaterLevel({ lvlNum }) {
 
 /** Discover knowledge checks for the learner's current path, graded by the server. */
 function Challenges() {
-  const { selectedPath, paths, run, navigate, isGuest } = useApp();
+  const { selectedPath, paths, run, navigate } = useApp();
   const [pathwayId, setPathwayId] = useState(selectedPath?.id || paths[0]?.id || '');
   // Paths load after sign-in; pick one as soon as they arrive (direct navigation / refresh).
   useEffect(() => {
@@ -72,7 +69,7 @@ function Challenges() {
   const { data, loading, error: listError, reload } = useAsync(
     () => api.get('challenges', { pathwayId }),
     [pathwayId],
-    { enabled: !isGuest && Boolean(pathwayId) },
+    { enabled: Boolean(pathwayId) },
   );
   const items = data?.items;
 
@@ -129,7 +126,7 @@ function Challenges() {
       </div>
       {error && <div className="form-feedback-alert error" role="alert"><span>{error}</span></div>}
 
-      {isGuest ? <AccountRequired feature="Challenges" /> : open ? (
+      {open ? (
         <div className="challenge-runner-card">
           <button className="back-nav-btn" disabled={submitting} onClick={() => setOpen(null)}>
             <ChevronLeft size={16} />

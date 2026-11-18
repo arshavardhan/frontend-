@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { LEVELS, unlockRequirement, nextMilestone, nextStageModule, nextLesson, xpProgress, rankTitle } from '../../src/utils/journey';
+import { LEVELS, unlockRequirement, nextMilestone, nextLesson, xpProgress, rankTitle } from '../../src/utils/journey';
 
 const ms = (statuses) => LEVELS.map((l, i) => ({ ...l, status: statuses[i] ?? 'locked', backendState: null }));
 
@@ -25,9 +25,7 @@ describe('journey helpers', () => {
     expect(next.target.name).toBe('Start Building');
   });
 
-  it('finds the next available stage module and lesson', () => {
-    expect(nextStageModule({ modules: [{ key: 'a', isCompleted: true }, { key: 'b', isCompleted: false, isLocked: false }, { key: 'c', isLocked: true }] }).key).toBe('b');
-    expect(nextStageModule({ modules: [{ key: 'a', isCompleted: true }] })).toBeNull();
+  it('finds the next available lesson', () => {
     const course = { modules: [{ lessons: [{ id: '1', isCompleted: true, access: { allowed: true } }, { id: '2', access: { allowed: true } }, { id: '3', access: { allowed: false } }] }] };
     expect(nextLesson(course).id).toBe('2');
   });

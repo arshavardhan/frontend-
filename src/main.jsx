@@ -20,11 +20,10 @@ import { StageFrame } from './components/stage/StageScene';
 import LevelOnePage from './pages/LevelOnePage';
 import LevelTwoPage from './pages/LevelTwoPage';
 import StageLevelPage from './pages/StageLevelPage';
+import LevelPathPage from './pages/LevelPathPage';
 import './style.css';
 import './stage2.css';
 import './styles/tokens.css';
-import './styles/level.css';
-import './styles/journey-redesign.css';
 import './styles/redesign.css';
 
 function Toast() {
@@ -38,9 +37,13 @@ function Toast() {
   );
 }
 
+/** `level/3/path` … `level/10/path`: a level's full learning path. */
+const levelPathOf = (path) => /^level\/(\d+)\/path$/.exec(path)?.[1];
+
 /** Screens from the redesign render edge to edge inside the shell. */
 function viewportClass(path) {
   if (path === 'home') return 'viewport-home';
+  if (levelPathOf(path)) return 'viewport-wide';
   if (path.startsWith('level/') || path === 'stage2') return 'viewport-scene';
   if (path.startsWith('path/') || path === 'stage2/overview' || path.startsWith('tunnel/')) return 'viewport-wide';
   return '';
@@ -95,6 +98,7 @@ function AppContent() {
     if (routePath === 'level/2' || routePath === 'stage2') return <LevelTwoPage />;
     if (routePath === 'stage2/overview') return <Stage2Page />;
     if (routePath === 'level/1') return <LevelOnePage />;
+    if (levelPathOf(routePath)) return levelPathOf(routePath) === '2' ? <Stage2Page /> : <LevelPathPage key={routePath} level={Number(levelPathOf(routePath))} />;
     if (routePath.startsWith('level/')) {
       const n = Number(routePath.split('/')[1]);
       if (n >= 3 && n <= 10) return <StageLevelPage level={n} />;

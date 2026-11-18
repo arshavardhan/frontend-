@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { api, errorMessage } from '../lib/api';
 import { ProgressBar, RingProgress } from '../components/shared/Progress';
-import { AccountRequired, ErrorState, LoadingState } from '../components/shared/States';
+import { ErrorState, LoadingState } from '../components/shared/States';
 import {
   ArrowLeft, ChevronRight, ChartNoAxesColumnIncreasing, Clock, Zap, Lock, Check, CircleCheck, Play,
   MonitorPlay, ChartColumnBig, BriefcaseBusiness, Target, Search, FileText, Gamepad2, BrainCircuit, Code2,
@@ -42,7 +42,7 @@ const moduleProgress = (m) => {
 };
 
 export default function PathDetailsPage() {
-  const { currentRoute, paths, allPaths, navigate, explorePath, run, triggerToast, isGuest } = useApp();
+  const { currentRoute, paths, allPaths, navigate, explorePath, run, triggerToast } = useApp();
   const pathId = currentRoute.path.replace('path/', '');
   const currentPath = (allPaths ?? paths).find((p) => p.id === pathId);
   const isAI = pathId === 'ai-engineering';
@@ -52,7 +52,7 @@ export default function PathDetailsPage() {
   const [busy, setBusy] = useState(false);
 
   const load = useCallback(async () => {
-    if (isGuest || !pathExists) return;
+    if (!pathExists) return;
     setError('');
     try {
       await explorePath(pathId);
@@ -60,7 +60,7 @@ export default function PathDetailsPage() {
     } catch (e) {
       setError(errorMessage(e));
     }
-  }, [explorePath, pathId, isGuest, pathExists]);
+  }, [explorePath, pathId, pathExists]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -79,7 +79,6 @@ export default function PathDetailsPage() {
     navigate('lesson', { path: pathId, lesson: lesson.id });
   };
 
-  if (isGuest) return <AccountRequired feature="the learning path" />;
   if (!currentPath) return <ErrorState message="This learning path could not be found." />;
 
   const next = nextLesson(course);

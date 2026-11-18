@@ -5,7 +5,7 @@ import {
 import { useApp } from '../context/AppContext';
 import { api } from '../lib/api';
 import useAsync from '../hooks/useAsync';
-import { AccountRequired, ErrorState, LoadingState } from '../components/shared/States';
+import { ErrorState, LoadingState } from '../components/shared/States';
 import { SideQuests, StreakCard } from '../components/JourneyWidgets';
 
 const GROUP_ART = ['core', 'build', 'tools', 'dev'];
@@ -26,10 +26,10 @@ function HeroTitle({ text }) {
 }
 
 export default function Stage2Page() {
-  const { isGuest, stage2, run, navigate } = useApp();
-  const overview = useAsync(() => api.get('stage2/overview'), [stage2?.batch?.id, stage2?.enrolled], { enabled: !isGuest });
+  const { stage2, run, navigate } = useApp();
+  const overview = useAsync(() => api.get('stage2/overview'), [stage2?.batch?.id, stage2?.enrolled]);
   const data = overview.data;
-  const qualification = useAsync(() => api.get('stage3/eligibility'), [data?.batch?.id], { enabled: !isGuest && Boolean(data?.enrolled) });
+  const qualification = useAsync(() => api.get('stage3/eligibility'), [data?.batch?.id], { enabled: Boolean(data?.enrolled) });
   const [busy, setBusy] = useState(false);
   const groups = data?.learningPath?.groups ?? null;
   const [selected, setSelected] = useState(null);
@@ -82,7 +82,7 @@ export default function Stage2Page() {
             </div>
           </header>
 
-          {isGuest ? <AccountRequired feature="Stage 2" /> : overview.error ? (
+          {overview.error ? (
             <ErrorState message={overview.error} onRetry={overview.reload} />
           ) : overview.loading && !data ? <LoadingState label="Loading Stage 2…" /> : data && (
             <>

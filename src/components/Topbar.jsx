@@ -12,10 +12,7 @@ const NOTICE_TEXT = {
   CareerPathFinalized: 'Your career path is saved',
 };
 const noticeText = (type) => NOTICE_TEXT[type] || type.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[._]/g, ' ');
-import {
-  Menu, X, ChevronRight, ChevronDown, Flame, Zap, Bell, Settings,
-  LogOut, Compass, BookOpen, Sparkles
-} from 'lucide-react';
+import { Menu, X, ChevronRight, ChevronDown, Flame, Zap, Bell, Settings, LogOut, BookOpen, Sparkles } from 'lucide-react';
 
 export default function Topbar() {
   const {
@@ -121,6 +118,17 @@ export default function Topbar() {
         ? { label: query.tunnel === 'ai' ? 'AI Tunnel' : 'DSA Tunnel', route: `tunnel/${query.tunnel}` }
         : { label: 'Stage 2', route: 'stage2' };
       return [{ label: 'Home', route: 'home' }, parent, { label: query.module || 'Module', active: true }];
+    }
+    if (path === 'stage2/overview') {
+      return [{ label: 'Home', route: 'home' }, { label: 'Level 2', route: 'stage2' }, { label: 'Learning Path', active: true }];
+    }
+    if (/^level\/\d+\/path$/.test(path)) {
+      const n = Number(path.split('/')[1]);
+      return [
+        { label: 'Home', route: 'home' },
+        { label: `Level ${n}: ${milestones[n - 1]?.name ?? 'Milestone'}`, route: `level/${n}` },
+        { label: 'Learning Path', active: true }
+      ];
     }
     if (path.startsWith('level/')) {
       const lvlNum = path.replace('level/', '');

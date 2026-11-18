@@ -2,10 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import { api, errorMessage } from '../lib/api';
 import VisualSections from '../components/VisualSections';
-import {
-  ChevronLeft, Play, Check, Lock, BookOpen, Layers, Target, NotebookPen,
-  FileText, ArrowRight, HelpCircle, ExternalLink, ArrowLeft, Settings, Maximize
-} from 'lucide-react';
+import { Play, Check, Lock, BookOpen, Layers, Target, NotebookPen, FileText, ArrowRight, HelpCircle, ExternalLink, ArrowLeft, Settings, Maximize } from 'lucide-react';
 
 const REFLECTION_MIN = 20;
 
@@ -126,10 +123,9 @@ function QuickCheck({ lessonId, quickCheck }) {
 }
 
 export default function LessonPage() {
-  const { currentRoute, navigate, paths, run, triggerToast } = useApp();
+  const { currentRoute, navigate, run, triggerToast } = useApp();
   const pathId = currentRoute.query.path || '';
   const lessonId = currentRoute.query.lesson || '';
-  const currentPath = paths.find((p) => p.id === pathId);
 
   const [level, setLevel] = useState(null);
   const [material, setMaterial] = useState(null);

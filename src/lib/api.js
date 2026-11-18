@@ -51,7 +51,7 @@ const query = (params = {}) => {
 };
 
 /** True while the visitor is in the guest workspace: calls are answered by the in-browser demo API. */
-export const isDemoSession = () => {
+const isDemoSession = () => {
   try { return typeof localStorage !== 'undefined' && localStorage.getItem('teklozyGuestSession') === 'true'; }
   catch { return false; }
 };

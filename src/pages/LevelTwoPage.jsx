@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, BrainCircuit, Code2, Layers, LayoutGrid, PartyPopper, Terminal } from 'lucide-react';
+import { ArrowRight, BrainCircuit, Code2, LayoutGrid, PartyPopper, Terminal } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { api } from '../lib/api';
 import useAsync from '../hooks/useAsync';

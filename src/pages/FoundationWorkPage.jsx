@@ -3,7 +3,7 @@ import { ArrowRight, BookOpen, CheckCircle2, ChevronLeft, Lock } from 'lucide-re
 import { useApp } from '../context/AppContext';
 import { api, errorMessage } from '../lib/api';
 import useAsync from '../hooks/useAsync';
-import { AccountRequired, ErrorState, LoadingState } from '../components/shared/States';
+import { ErrorState, LoadingState } from '../components/shared/States';
 import { ProgressBar } from '../components/shared/Progress';
 import Stage2LessonView from '../components/stage/Stage2LessonView';
 
@@ -11,7 +11,7 @@ const stateText = (state) => state?.replaceAll('_', ' ') ?? '';
 const accountError = 'Open this module from your learning path.';
 
 export default function FoundationWorkPage({ lesson = false }) {
-  const { currentRoute, isGuest, navigate, refresh } = useApp();
+  const { currentRoute, navigate, refresh } = useApp();
   const q = currentRoute.query;
   const valid = Boolean(q.batch && q.module && (!lesson || q.concept));
   const part = q.part === 'guided' ? 'guided' : 'lesson';
@@ -19,10 +19,10 @@ export default function FoundationWorkPage({ lesson = false }) {
   const result = useAsync(() => lesson
     ? api.get('stage2/lessons', ref)
     : api.get('stage2/modules/outline', { batchId: q.batch, moduleId: q.module }),
-  [lesson, q.batch, q.module, q.concept, part], { enabled: valid && !isGuest });
+  [lesson, q.batch, q.module, q.concept, part], { enabled: valid });
   // In a lesson, the module outline tells us what comes next (lesson → guided problem → ticket).
   const outlineQ = useAsync(() => api.get('stage2/modules/outline', { batchId: q.batch, moduleId: q.module }),
-    [lesson, q.batch, q.module, q.concept, part], { enabled: lesson && valid && !isGuest });
+    [lesson, q.batch, q.module, q.concept, part], { enabled: lesson && valid });
   const items = outlineQ.data?.items ?? [];
   const here = items.findIndex((i) => i.itemId === `${q.concept}:${part}`);
   const nextItem = here >= 0 ? items.slice(here + 1).find((i) => i.state !== 'awaiting_content') ?? null : null;
@@ -50,7 +50,6 @@ export default function FoundationWorkPage({ lesson = false }) {
     navigate('stage2/ticket', { ...q, module: storage.moduleId, challenge: storage.challengeId || undefined, concept: item.conceptId, outline: q.module });
   };
 
-  if (isGuest) return <AccountRequired feature="Stage 2 learning" />;
   const data = result.data;
   if (lesson && valid && data && !result.error) {
     return (

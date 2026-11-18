@@ -76,8 +76,8 @@ export function StreakCard({ streak, error, loading, reload }) {
 }
 
 export function HomeStreak() {
-  const { isGuest, gamification } = useApp();
-  const query = useAsync(() => api.get('streaks/me'), [gamification?.totalXp], { enabled: !isGuest });
+  const { gamification } = useApp();
+  const query = useAsync(() => api.get('streaks/me'), [gamification?.totalXp]);
   return <StreakCard {...query} streak={query.data} />;
 }
 
@@ -93,8 +93,8 @@ function questStatus(tunnel) {
 
 /** DSA and AI tunnels, from `GET tunnels`. Each opens its own route and returns to `from`. */
 export function SideQuests({ from }) {
-  const { navigate, isGuest, finalizedPathId, currentRoute } = useApp();
-  const { data, error, loading, reload } = useAsync(() => api.get('tunnels'), [finalizedPathId], { enabled: !isGuest });
+  const { navigate, finalizedPathId, currentRoute } = useApp();
+  const { data, error, loading, reload } = useAsync(() => api.get('tunnels'), [finalizedPathId]);
   const items = TUNNEL_PREVIEWS.map((preview) => ({ ...preview, ...(data?.items?.find((item) => item.id === preview.id) ?? {}) }));
   const origin = from ?? (currentRoute.path === 'home' ? 'home' : 'stage2');
   return (
@@ -127,25 +127,5 @@ export function SideQuests({ from }) {
         })}
       </div>
     </section>
-  );
-}
-
-/** The featured DSA quest, placed on the Home map like the reference (fills the art's quest frame). */
-export function MapQuestCard({ area }) {
-  const { navigate, isGuest, finalizedPathId } = useApp();
-  const { data } = useAsync(() => api.get('tunnels'), [finalizedPathId], { enabled: !isGuest });
-  const dsa = { ...TUNNEL_PREVIEWS[0], ...(data?.items?.find((t) => t.id === 'dsa') ?? {}) };
-  const locked = dsa.open === false;
-  return (
-    <div className="hm-quest" style={{ left: `${area.left}%`, top: `${area.top}%`, width: `${area.width}%`, height: `${area.height}%` }}>
-      <div className="hm-quest__copy">
-        <strong>{dsa.title}<span>(Quest)</span></strong>
-        <p>{locked ? 'Choose your Development path to unlock.' : 'Master DSA, solve challenges & earn XP.'}</p>
-        <button type="button" onClick={() => navigate('tunnel/dsa', { from: 'home' })}>
-          {locked ? <><Lock size={14} /> View Quest</> : <>Enter Quest <ArrowRight size={15} /></>}
-        </button>
-      </div>
-      <img src="/illustrations/quest-dsa.png" alt="" />
-    </div>
   );
 }

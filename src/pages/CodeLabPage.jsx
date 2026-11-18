@@ -2,7 +2,7 @@ import React from 'react';
 import { useApp } from '../context/AppContext';
 import { api } from '../lib/api';
 import useAsync from '../hooks/useAsync';
-import { AccountRequired, EmptyState, ErrorState, LoadingState } from '../components/shared/States';
+import { EmptyState, ErrorState, LoadingState } from '../components/shared/States';
 import { ArrowRight, FlaskConical, Lock, Terminal, Database, Globe } from 'lucide-react';
 
 /**
@@ -10,7 +10,7 @@ import { ArrowRight, FlaskConical, Lock, Terminal, Database, Globe } from 'lucid
  * preview and SQL); there is no in-process code execution in the web app.
  */
 export default function CodeLabPage() {
-  const { stage2, stage2Error, isGuest, refresh, navigate } = useApp();
+  const { stage2, stage2Error, refresh, navigate } = useApp();
   const batchId = stage2?.batch?.id;
   const { data: labs, error, loading, reload } = useAsync(async () => {
     const [validation, curriculum] = await Promise.all([
@@ -25,7 +25,7 @@ export default function CodeLabPage() {
       key: m.id, title: m.label, moduleId: m.id, locked: m.state === 'locked', note: `Module ${m.id}`,
     }));
     return [...practice, ...modules];
-  }, [batchId], { enabled: !isGuest && Boolean(batchId) });
+  }, [batchId], { enabled: Boolean(batchId) });
 
   return (
     <div className="generic-workspace-page">
@@ -36,7 +36,7 @@ export default function CodeLabPage() {
           <p>Each lab opens your own sandbox with a real terminal, the starter files, visible checks and hidden grading.</p>
         </div>
       </div>
-      {isGuest ? <AccountRequired feature="CodeLab" /> : stage2Error ? (
+      {stage2Error ? (
         <ErrorState message={stage2Error} onRetry={refresh} />
       ) : !stage2 ? (
         <LoadingState label="Loading Stage 2 access…" />

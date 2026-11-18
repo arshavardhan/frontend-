@@ -3,7 +3,7 @@ import { ArrowLeft, ArrowRight, Clock3, Lock, Play, CheckCircle2, Compass } from
 import { useApp } from '../context/AppContext';
 import { api } from '../lib/api';
 import useAsync from '../hooks/useAsync';
-import { AccountRequired, ErrorState, LoadingState } from '../components/shared/States';
+import { ErrorState, LoadingState } from '../components/shared/States';
 import { ProgressBar } from '../components/shared/Progress';
 import { TUNNEL_PREVIEWS } from '../components/JourneyWidgets';
 
@@ -11,12 +11,12 @@ const STATE_LABEL = { completed: 'Completed', in_progress: 'In progress', availa
 
 /** Entry screen of one optional tunnel (`#/tunnel/dsa`, `#/tunnel/ai`), from `GET tunnels/overview`. */
 export default function TunnelPage() {
-  const { currentRoute, isGuest, navigate } = useApp();
+  const { currentRoute, navigate } = useApp();
   const id = currentRoute.path.split('/')[1];
   const from = currentRoute.query.from === 'stage2' ? 'stage2' : 'home';
   const preview = TUNNEL_PREVIEWS.find((t) => t.id === id);
-  const { data, error, loading, reload } = useAsync(() => api.get('tunnels/overview', { tunnelId: id }), [id], { enabled: Boolean(preview) && !isGuest });
-  const list = useAsync(() => api.get('tunnels'), [id], { enabled: Boolean(preview) && !isGuest && Boolean(data?.open) });
+  const { data, error, loading, reload } = useAsync(() => api.get('tunnels/overview', { tunnelId: id }), [id], { enabled: Boolean(preview) });
+  const list = useAsync(() => api.get('tunnels'), [id], { enabled: Boolean(preview) && Boolean(data?.open) });
   const progress = list.data?.items?.find((t) => t.id === id)?.progress ?? null;
   const modules = (data?.levels ?? []).flatMap((l) => l.modules);
   const start = data?.open ? modules.find((m) => m.status !== 'awaiting_content' && (m.state === 'in_progress' || m.state === 'available')) : null;
@@ -48,7 +48,7 @@ export default function TunnelPage() {
         {preview && <img className="tn-hero__art" src={`/illustrations/quest-${id}.png`} alt="" />}
       </header>
 
-      {!preview ? <ErrorState message="This tunnel could not be found." /> : isGuest ? <AccountRequired feature="side quests" /> : error ? (
+      {!preview ? <ErrorState message="This tunnel could not be found." /> : error ? (
         <ErrorState message={error} onRetry={reload} />
       ) : loading && !data ? <LoadingState label="Loading tunnel…" /> : data && (
         <>

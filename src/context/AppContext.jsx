@@ -8,7 +8,7 @@ import { Code2, Sparkles } from 'lucide-react';
 const PUBLIC_ROUTES = new Set(['signin', 'reset-password']);
 const EXPLORING_KEY = 'teklozyExploringPath';
 
-export const DEFAULT_PATHS = [
+const DEFAULT_PATHS = [
   {
     id: 'software-development',
     name: 'Development',
@@ -354,7 +354,6 @@ export function AppProvider({ children }) {
     stage2,
     stage2Error,
     // The guest workspace has full access through the demo API; `isDemo` only drives the preview badge.
-    isGuest: false,
     isDemo: user?.id === 'guest-demo',
     paths: effectivePaths,
     allPaths,

@@ -20,6 +20,7 @@ const { default: FoundationWorkPage } = await import('../../src/pages/Foundation
 const { default: Sidebar } = await import('../../src/components/Sidebar');
 const { default: LevelTwoPage } = await import('../../src/pages/LevelTwoPage');
 const { default: StageLevelPage } = await import('../../src/pages/StageLevelPage');
+const { default: LevelPathPage } = await import('../../src/pages/LevelPathPage');
 
 const week = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((weekday, i) => ({
   date: `2026-11-${16 + i}`, weekday, done: false, isToday: i === 1, isFuture: i > 1,
@@ -235,5 +236,38 @@ describe('Every level opens as a stage', () => {
     expect(screen.getAllByText('Under development').length).toBe(4);
     fireEvent.click(screen.getByRole('button', { name: /continue level 2/i }));
     expect(globalThis.__app.navigate).toHaveBeenCalledWith('stage2');
+  });
+});
+
+describe('Full learning path of Levels 3–10', () => {
+  it('opens from the level Resources and shows four groups marked under development', async () => {
+    globalThis.__app = makeApp({ statuses: ['completed', 'current'] });
+    render(<StageLevelPage level={7} />);
+    fireEvent.click(screen.getByRole('button', { name: /full learning path/i }));
+    expect(globalThis.__app.navigate).toHaveBeenCalledWith('level/7/path');
+  });
+
+  it('Level 7 lists its planned groups, what it gives and the next milestone', async () => {
+    globalThis.__app = makeApp({ statuses: ['completed', 'current'] });
+    routeGet({ 'streaks/me': streak(0), tunnels: tunnels(true) });
+    render(<LevelPathPage level={7} />);
+    expect(screen.getByRole('heading', { name: /ace your interviews/i })).toBeTruthy();
+    expect(screen.getByRole('button', { name: /dsa interview practice/i })).toBeTruthy();
+    expect(screen.getAllByText('Under development').length).toBeGreaterThanOrEqual(4);
+    fireEvent.click(screen.getByRole('button', { name: /mock interviews/i }));
+    expect(screen.getByText(/modules for mock interviews are under development/i)).toBeTruthy();
+    expect(screen.getByText(/complete level 7 to unlock level 8/i)).toBeTruthy();
+  });
+
+  it('Level 3 fills its groups with the backend Development Advanced modules', async () => {
+    globalThis.__app = makeApp({ statuses: ['completed', 'current'] });
+    const modules = Array.from({ length: 8 }, (_, i) => ({ id: `ADV${i + 1}`, title: `Advanced module ${i + 1}`, state: 'locked', status: 'awaiting_content' }));
+    routeGet({ 'stage2/curriculum': { modules }, 'streaks/me': streak(0), tunnels: tunnels(true) });
+    render(<LevelPathPage level={3} />);
+    expect(await screen.findByText('Advanced module 1')).toBeTruthy();
+    expect(get).toHaveBeenCalledWith('stage2/curriculum', { batchId: 'development-advanced' });
+    fireEvent.click(screen.getByRole('button', { name: /production engineering/i }));
+    expect(screen.getByText('Advanced module 8')).toBeTruthy();
+    expect(screen.getAllByText(/ADV8 · Under development/).length).toBe(1);
   });
 });

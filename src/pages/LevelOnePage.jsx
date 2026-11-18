@@ -1,20 +1,20 @@
 import React, { useState } from 'react';
-import { ArrowRight, BrainCircuit, Code2, Compass, PartyPopper, Trophy } from 'lucide-react';
+import { ArrowRight, BrainCircuit, Code2, PartyPopper, Trophy } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { api } from '../lib/api';
 import StageScene from '../components/stage/StageScene';
 import { StageCTA, StageHeroIcon, StageModuleList, StageProgressCard, StageRewards } from '../components/stage/StageParts';
-import { AccountRequired, ErrorState } from '../components/shared/States';
+import { ErrorState } from '../components/shared/States';
 import { nextLesson, stageNextMarkers, stageScene } from '../utils/journey';
 
 const MAIN_PATH = 'software-development';
 
-/** /illustrations/level1-scene.jpg and the platforms the next two levels sit on (% of the art). */
-export const LEVEL1_ART = stageScene(1);
+/** Level 1's scene and the platforms the next two levels sit on (% of the art). */
+const LEVEL1_ART = stageScene(1);
 const LEVEL1_MARKERS = stageNextMarkers(1);
 
 export default function LevelOnePage() {
-  const { stageModules, navigate, run, milestones, journey, finalizePath, isGuest, refresh, triggerToast } = useApp();
+  const { stageModules, navigate, run, milestones, journey, finalizePath, refresh, triggerToast } = useApp();
   const [busy, setBusy] = useState(false);
 
   const level1 = journey?.levels?.find((level) => level.number === 1);
@@ -79,7 +79,7 @@ export default function LevelOnePage() {
   const overview = (
     <>
       <StageProgressCard level={1} percent={percent} done={completed} total={total} />
-      {isGuest ? <AccountRequired feature="Discover" /> : !stageModules ? (
+      {!stageModules ? (
         <ErrorState message="Discover modules could not be loaded." onRetry={refresh} />
       ) : (
         <>

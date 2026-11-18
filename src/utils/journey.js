@@ -20,7 +20,7 @@ export const LEVELS = [
 const CREST_TITLES = { 1: 'Discover', 2: 'Core Foundations' };
 export const crestTitle = (n) => CREST_TITLES[n] ?? LEVELS.find((l) => l.level === Number(n))?.name ?? '';
 
-/** Glossy stage badge (transparent) and the badge on its pedestal with a background. */
+/** Glossy stage badge (transparent) and the badge on a tile with a background. */
 export const stageBadge = (n) => `/illustrations/stages/badge-${n}.webp`;
 export const stageTile = (n) => `/illustrations/stages/tile-${n}.webp`;
 
@@ -29,8 +29,6 @@ export const stageScene = (n) => ({ image: `/illustrations/stages/scene-${n}.jpg
 const NEXT_SPOTS = [{ x: 76.4, y: 40.5 }, { x: 92.6, y: 31.5 }];
 export const stageNextMarkers = (n) => [n + 1, n + 2].filter((k) => k <= 10)
   .map((k, i) => ({ n: k, pos: NEXT_SPOTS[i], labelSide: i === 1 ? 'left' : 'below' }));
-/** Colour of each stage, used for the travel curtain between stages. */
-export const STAGE_COLORS = ['#22c55e', '#2f7bff', '#8b5cf6', '#fb8c1e', '#14b8a6', '#6366f1', '#f43f5e', '#0ea5e9', '#f5b70b', '#e046b8'];
 
 export const levelInfo = (n) => LEVELS.find((l) => l.level === Number(n)) ?? LEVELS[0];
 
@@ -81,17 +79,10 @@ export function nextMilestone(milestones) {
   };
 }
 
-/** First Level 1 module the learner can work on (server lock state decides). */
-export function nextStageModule(stageModules) {
-  const modules = stageModules?.modules ?? [];
-  return modules.find((m) => !m.isCompleted && !m.isLocked) ?? null;
-}
-
 /** First lesson the learner can open: the first unfinished allowed one, else the first allowed. */
 export function nextLesson(course) {
   const lessons = (course?.modules ?? []).flatMap((m) => m.lessons ?? []);
   return lessons.find((l) => l.access?.allowed && !l.isCompleted) ?? lessons.find((l) => l.access?.allowed) ?? null;
 }
 
-export const formatDuration = (minutes) => (minutes ? `${minutes} min` : '');
 export const pad2 = (n) => String(n).padStart(2, '0');
