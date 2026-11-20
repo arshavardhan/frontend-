@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { createRoot } from 'react-dom/client';
 import { CheckCircle2 } from 'lucide-react';
 import { AppProvider, useApp } from './context/AppContext';
@@ -17,14 +17,21 @@ import Stage2TicketPage from './pages/Stage2TicketPage';
 import FoundationWorkPage from './pages/FoundationWorkPage';
 import TunnelPage from './pages/TunnelPage';
 import { StageFrame } from './components/stage/StageScene';
+import { LoadingState } from './components/shared/States';
+
+// The problem page carries the Monaco editor, so it loads only when a problem is opened.
+const DsaProblemPage = lazy(() => import('./pages/DsaProblemPage'));
 import LevelOnePage from './pages/LevelOnePage';
 import LevelTwoPage from './pages/LevelTwoPage';
 import StageLevelPage from './pages/StageLevelPage';
 import LevelPathPage from './pages/LevelPathPage';
+import DsaDungeonPage from './pages/DsaDungeonPage';
+import DsaChapterPage from './pages/DsaChapterPage';
 import './style.css';
 import './stage2.css';
 import './styles/tokens.css';
 import './styles/redesign.css';
+import './styles/dsa.css';
 
 function Toast() {
   const { toastMessage } = useApp();
@@ -43,6 +50,7 @@ const levelPathOf = (path) => /^level\/(\d+)\/path$/.exec(path)?.[1];
 /** Screens from the redesign render edge to edge inside the shell. */
 function viewportClass(path) {
   if (path === 'home') return 'viewport-home';
+  if (path === 'tunnel/dsa' || path === 'dsa/chapter' || path === 'dsa/problem') return 'viewport-dsa';
   if (levelPathOf(path)) return 'viewport-wide';
   if (path.startsWith('level/') || path === 'stage2') return 'viewport-scene';
   if (path.startsWith('path/') || path === 'stage2/overview' || path.startsWith('tunnel/')) return 'viewport-wide';
@@ -87,7 +95,7 @@ function AppContent() {
   }
 
   // Full-width distraction-free studio for Lesson, Path Details, and Stage 2 Ticket
-  const isStudioMode = routePath === 'lesson' || routePath === 'stage2/ticket' || routePath === 'stage2/lesson';
+  const isStudioMode = routePath === 'lesson' || routePath === 'stage2/ticket' || routePath === 'stage2/lesson' || routePath === 'dsa/problem';
   const isCodeLab = routePath === 'stage2/ticket' && currentRoute?.query?.view === 'lab';
 
   const renderActiveScreen = () => {
@@ -108,6 +116,9 @@ function AppContent() {
     if (routePath === 'build') return <CodeLabPage />;
 
     if (routePath === 'stage2/module' || routePath === 'stage2/lesson') return <FoundationWorkPage key={currentRoute.raw} lesson={routePath === 'stage2/lesson'} />;
+    if (routePath === 'tunnel/dsa') return <DsaDungeonPage />;
+    if (routePath === 'dsa/chapter') return <DsaChapterPage key={currentRoute.raw} />;
+    if (routePath === 'dsa/problem') return <Suspense fallback={<div className="dsa-page dsa-page--center"><LoadingState label="Opening the editor…" /></div>}><DsaProblemPage /></Suspense>;
     if (routePath.startsWith('tunnel/')) return <TunnelPage key={routePath} />;
     if (routePath === 'stage2/ticket') return <Stage2TicketPage key={JSON.stringify([currentRoute.query.batch, currentRoute.query.module, currentRoute.query.challenge, currentRoute.query.concept])} />;
     if (routePath === 'challenges') return <GenericPage type="challenges" />;

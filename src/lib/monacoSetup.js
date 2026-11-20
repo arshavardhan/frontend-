@@ -4,6 +4,8 @@ import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker.js?worker';
 import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/python/python.contribution.js';
 import 'monaco-editor/esm/vs/basic-languages/sql/sql.contribution.js';
+import 'monaco-editor/esm/vs/basic-languages/java/java.contribution.js';
+import 'monaco-editor/esm/vs/basic-languages/cpp/cpp.contribution.js';
 
 globalThis.MonacoEnvironment = { getWorker: () => new EditorWorker() };
 loader.config({ monaco });

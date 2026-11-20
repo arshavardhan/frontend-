@@ -37,6 +37,7 @@ export default function Topbar() {
   const [notices, setNotices] = useState(null);
   const unread = dashboard?.identity?.unreadNotifications ?? 0;
   const streak = dashboard?.streak?.currentDays ?? gamification?.streakDays ?? 0;
+  const isDungeon = ['tunnel/dsa', 'dsa/chapter', 'dsa/problem'].includes(currentRoute?.path);
 
   useEffect(() => {
     if (!noticeOpen) return;
@@ -109,6 +110,13 @@ export default function Topbar() {
         { label: query.challenge || query.module || 'Ticket', active: true }
       ];
     }
+    if (path === 'tunnel/dsa' || path === 'dsa/chapter' || path === 'dsa/problem') {
+      const n = Math.max(1, milestones.findIndex((m) => m.status === 'current') + 1);
+      const trail = [{ label: 'Home', route: 'home' }, { label: 'Journey', route: 'home' }, { label: `Level ${n}`, route: `level/${n}` }, { label: 'Side Quest', route: 'tunnel/dsa' }];
+      if (path === 'tunnel/dsa') return [...trail, { label: 'DSA Dungeon', active: true }];
+      const chapter = path === 'dsa/chapter' ? `Chapter ${Number(String(query.id ?? 'DSA01').replace(/\D/g, '')) || 1}` : 'Problem';
+      return [...trail.slice(0, 1), trail[3], { label: 'DSA Dungeon', route: 'tunnel/dsa' }, { label: chapter, active: true }];
+    }
     if (path.startsWith('tunnel/')) {
       const from = query.from === 'stage2' ? { label: 'Stage 2', route: 'stage2' } : { label: 'Home', route: 'home' };
       return [from, { label: path === 'tunnel/ai' ? 'AI Tunnel' : path === 'tunnel/dsa' ? 'DSA Tunnel' : 'Side quest', active: true }];
@@ -156,7 +164,7 @@ export default function Topbar() {
   const breadcrumbs = getBreadcrumbs();
 
   return (
-    <header className="global-topbar">
+    <header className={`global-topbar ${isDungeon ? 'is-dungeon' : ''}`}>
       {/* Left branding & mobile trigger */}
       <div className={`topbar-brand-area ${sidebarCollapsed ? 'is-collapsed' : ''}`}>
         <button
@@ -168,7 +176,7 @@ export default function Topbar() {
         </button>
 
         <a href="#/home" className="topbar-logo-link" aria-label="Teklozy Home">
-          <img src="/teklozy-logo-original.png" alt="Teklozy" className="topbar-logo-img" />
+          <img src={isDungeon ? '/teklozy-logo-on-dark.png' : '/teklozy-logo-original.png'} alt="Teklozy" className="topbar-logo-img" />
         </a>
       </div>
 
@@ -194,7 +202,7 @@ export default function Topbar() {
         {/* Streak Pill */}
         <div className="stat-badge-pill streak-pill" title={`${streak} consecutive days of learning`}>
           <Flame size={15} className="streak-icon" />
-          <span className="pill-text">{streak} Day{streak === 1 ? '' : 's'} Streak</span>
+          <span className="pill-text">{isDungeon ? 'Your pace. Your quest.' : `${streak} Day${streak === 1 ? '' : 's'} Streak`}</span>
         </div>
 
         {/* XP Pill */}

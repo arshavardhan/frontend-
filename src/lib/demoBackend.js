@@ -752,7 +752,13 @@ export async function demoRequest(method, path, query = {}, body = {}) {
   await new Promise((r) => setTimeout(r, 60));
   const s = load();
   try {
-    const result = route(method, path, query ?? {}, body ?? {}, s);
+    const result = path.startsWith('dsa/') || path.startsWith('genie/')
+      // The DSA Dungeon's data and in-browser judge load only when a guest opens it.
+      ? await (await import('./dsa/demoDsa')).dsaDemoRoute(method, path, query ?? {}, body ?? {}, s, fail, () => {
+        const today = isoDay();
+        if (!s.days.includes(today)) s.days.push(today);
+      })
+      : route(method, path, query ?? {}, body ?? {}, s);
     if (method !== 'GET') save(s);
     return JSON.parse(JSON.stringify(result));
   } catch (e) {

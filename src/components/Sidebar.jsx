@@ -71,7 +71,7 @@ export default function Sidebar() {
       )}
 
       <aside
-        className={`app-sidebar tk-sidebar ${sidebarCollapsed ? 'is-collapsed' : ''} ${mobileMenuOpen ? 'mobile-visible' : ''}`}
+        className={`app-sidebar tk-sidebar ${['tunnel/dsa', 'dsa/chapter', 'dsa/problem'].includes(currentPath) ? 'is-dark' : ''} ${sidebarCollapsed ? 'is-collapsed' : ''} ${mobileMenuOpen ? 'mobile-visible' : ''}`}
         aria-label="Main sidebar navigation"
       >
         <div className="sidebar-inner-scroll">
